@@ -1,4 +1,4 @@
-# Abonelik ve Fatura Takip Web Uygulaması
+# Abonelik ve Fatura Takip Web Uygulaması (CepteÖde)
 
 ## Proje Amacı
 Bu projenin amacı, kullanıcıların sahip oldukları abonelikleri ve faturaları
