@@ -1,0 +1,165 @@
+@model ReportsViewModel
+
+@{
+    ViewData["Title"] = "Raporlar";
+}
+
+<div class="row mb-5 align-items-end">
+    <div class="col-lg-8">
+        <h6 class="text-uppercase text-muted letter-spacing-2 mb-2">Analiz</h6>
+        <h1 class="display-4 fw-bold text-white mb-0">Harcama Raporu</h1>
+    </div>
+    <div class="col-lg-4 text-end">
+        <button class="btn btn-outline-light rounded-pill px-4" onclick="window.print()">
+            <i class="bi bi-printer me-2"></i> Yazdır
+        </button>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-lg glass-card h-100">
+            <div class="card-body p-4 text-center">
+                <i class="bi bi-piggy-bank text-success display-4 mb-3 d-block"></i>
+                <h5 class="text-muted text-uppercase small fw-bold">Yıllık Tahmini Gider</h5>
+                <h2 class="fw-bold text-white mb-0">@Model.TotalYearlySpend.ToString("C2")</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-lg glass-card h-100">
+            <div class="card-body p-4 text-center">
+                <i class="bi bi-graph-up text-primary display-4 mb-3 d-block"></i>
+                <h5 class="text-muted text-uppercase small fw-bold">Ortalama Aylık Gider</h5>
+                <h2 class="fw-bold text-white mb-0">@Model.AverageMonthlySpend.ToString("C2")</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-lg glass-card h-100">
+            <div class="card-body p-4 text-center">
+                <i class="bi bi-pie-chart text-warning display-4 mb-3 d-block"></i>
+                <h5 class="text-muted text-uppercase small fw-bold">En Çok Harcama (@Model.TopCategoryName)</h5>
+                <h2 class="fw-bold text-white mb-0">@Model.TopCategoryAmount.ToString("C2")</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row g-5">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg glass-card mb-4">
+             <div class="card-header bg-transparent border-0 pt-4 px-4">
+                 <h5 class="fw-bold text-white">Aylık Harcama Trendi</h5>
+             </div>
+            <div class="card-body p-4">
+                <canvas id="trendChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-lg glass-card h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                 <h5 class="fw-bold text-white">Kategori Dağılımı</h5>
+             </div>
+            <div class="card-body p-4 d-flex align-items-center justify-content-center">
+                <div style="width: 100%; max-width: 300px;">
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Trend Chart
+        const ctxTrend = document.getElementById('trendChart').getContext('2d');
+        
+        // Gradient fill
+        const gradient = ctxTrend.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');   
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+        new Chart(ctxTrend, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.Months)),
+                datasets: [{
+                    label: 'Toplam Harcama',
+                    data: @Html.Raw(Json.Serialize(Model.MonthlySpends)),
+                    borderColor: '#6366f1',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94a3b8' }
+                    }
+                }
+            }
+        });
+
+        // Category Pie Chart
+        const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'polarArea',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.CategorySpends.Keys)),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.CategorySpends.Values)),
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.7)',
+                        'rgba(168, 85, 247, 0.7)',
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(236, 72, 153, 0.7)',
+                        'rgba(245, 158, 11, 0.7)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: { color: '#fff' }
+                    }
+                },
+                scales: {
+                    r: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { display: false, backdropColor: 'transparent' }
+                    }
+                }
+            }
+        });
+    </script>
+}

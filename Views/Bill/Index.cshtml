@@ -1,0 +1,87 @@
+@model IEnumerable<webproje.Models.Bill>
+
+@{
+    ViewData["Title"] = "Faturalar";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+        <h1 class="display-4 text-gradient fw-bold">Faturalar</h1>
+        <p class="text-muted">Elektrik, su, doğalgaz ve diğer ödemelerinizi takip edin.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-lg">
+        <i class="bi bi-plus-lg"></i> Yeni Fatura Ekle
+    </a>
+</div>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        var statusColor = item.IsPaid ? "bg-success" : (item.DueDate < DateTime.Now ? "bg-danger" : "bg-warning");
+        var statusText = item.IsPaid ? "Ödendi" : (item.DueDate < DateTime.Now ? "Gecikmiş" : "Ödenecek");
+        var glassClass = item.IsPaid ? "glass-card-paid" : "glass-card-unpaid";
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm @glassClass" style="transition: transform 0.3s;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="icon-shape bg-soft-primary text-primary rounded-circle p-3">
+                             <i class="bi bi-receipt"></i>
+                        </div>
+                        <span class="badge @statusColor rounded-pill">@statusText</span>
+                    </div>
+                    <h3 class="card-title fw-bold text-white mb-1">@item.Name</h3>
+                    <h4 class="text-white mb-2">@item.Amount.ToString("C2")</h4>
+                    
+                    <p class="text-muted small mb-3">
+                        Abone No: @(item.SubscriberNumber ?? "-")
+                    </p>
+
+                    <div class="d-flex justify-content-between text-muted small border-top pt-3 border-secondary">
+                        <span>Son Ödeme</span>
+                        <span class="text-white @(item.DueDate < DateTime.Now && !item.IsPaid ? "text-danger fw-bold" : "")">
+                            @item.DueDate.ToShortDateString()
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                    <div class="d-grid gap-2">
+                        @if (!item.IsPaid)
+                        {
+                            <a asp-action="Pay" asp-route-id="@item.Id" class="btn btn-success btn-sm rounded-pill fw-bold">
+                                <i class="bi bi-check-lg"></i> Ödendi Olarak İşaretle
+                            </a>
+                        }
+                        <div class="d-flex gap-2">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-light btn-sm flex-fill rounded-pill">Düzenle</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm flex-fill rounded-pill">Sil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <h3 class="text-muted">Henüz hiç fatura eklemediniz.</h3>
+        <p class="text-muted">Fatura takibine hemen başlayın.</p>
+    </div>
+}
+
+<style>
+    .glass-card-unpaid {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(10px);
+    }
+    .glass-card-paid {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(10px);
+        opacity: 0.8;
+    }
+    .card:hover { 
+        transform: translateY(-5px);
+    }
+</style>

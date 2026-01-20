@@ -1,0 +1,64 @@
+@model webproje.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card border-0 shadow-lg glass-card">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-gradient">Hoşgeldiniz</h2>
+                    <p class="text-muted">Devam etmek için giriş yapın</p>
+                </div>
+                
+                <form asp-action="Login">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label text-muted small fw-bold">Email Adresi</label>
+                        <input asp-for="Email" class="form-control form-control-lg bg-dark text-white border-secondary" placeholder="name@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label text-muted small fw-bold">Şifre</label>
+                        <input asp-for="Password" class="form-control form-control-lg bg-dark text-white border-secondary" placeholder="••••••••" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label text-muted small">Beni Hatırla</label>
+                        </div>
+                        <a href="#" class="text-primary small text-decoration-none">Şifremi Unuttum</a>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">Giriş Yap</button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted small">Hesabınız yok mu? <a asp-action="Register" class="text-primary fw-bold text-decoration-none">Kayıt Ol</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .form-control:focus {
+        background-color: rgba(30, 41, 59, 0.8);
+        border-color: var(--primary);
+        color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+    }
+</style>

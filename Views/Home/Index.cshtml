@@ -1,0 +1,305 @@
+﻿@model DashboardViewModel
+@{
+    ViewData["Title"] = "Panel";
+}
+
+<div class="row mb-5 align-items-end">
+    <div class="col-lg-8">
+        <h6 class="text-uppercase text-muted letter-spacing-2 mb-2">Genel Bakış</h6>
+        <h1 class="display-3 fw-bold text-gradient mb-0">Hoş Geldin, @webproje.Models.UserSettings.UserName 👋</h1>
+        <p class="lead text-muted mt-2">Abonelik durumun kontrol altında.</p>
+    </div>
+    <div class="col-lg-4 text-end">
+        <a asp-controller="Subscription" asp-action="Create" class="btn btn-primary rounded-pill px-4 py-3 shadow-lg hover-scale">
+            <i class="bi bi-plus-lg me-2"></i> Yeni Abonelik Ekle
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card border-0 h-100 shadow-sm glass-card">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="icon-box bg-soft-primary text-primary">
+                        <i class="bi bi-wallet2 fs-4"></i>
+                    </div>
+                    <span class="badge bg-soft-success text-success">+%12 bu ay</span>
+                </div>
+                <h5 class="text-muted text-uppercase small fw-bold">Aylık Toplam</h5>
+                <h2 class="fw-bold text-white mb-0">@Model.TotalMonthlyCost.ToString("C2")</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 h-100 shadow-sm glass-card">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="icon-box bg-soft-info text-info">
+                        <i class="bi bi-collection fs-4"></i>
+                    </div>
+                </div>
+                <h5 class="text-muted text-uppercase small fw-bold">Aktif Abonelikler</h5>
+                <h2 class="fw-bold text-white mb-0">@Model.TotalSubscriptions <span class="fs-5 text-muted fw-normal">adet</span></h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 h-100 shadow-sm glass-card">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="icon-box bg-soft-warning text-warning">
+                        <i class="bi bi-star fs-4"></i>
+                    </div>
+                </div>
+                <h5 class="text-muted text-uppercase small fw-bold">En Çok Harcama</h5>
+                <h2 class="fw-bold text-white mb-0">@Model.TopCategory</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="row g-5">
+    <!-- Left Column: Charts and Activity -->
+    <div class="col-lg-8">
+        <!-- Budget & Chart Section -->
+        <div class="card border-0 shadow-lg glass-card mb-5">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                <h4 class="fw-bold text-white mb-0">Harcama Analizi</h4>
+                <select class="form-select form-select-sm bg-dark text-white border-secondary w-auto">
+                    <option>Bu Ay</option>
+                    <option>Geçen Ay</option>
+                    <option>Bu Yıl</option>
+                </select>
+            </div>
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-5">
+                        <canvas id="categoryChart" width="200" height="200"></canvas>
+                    </div>
+                    <div class="col-md-7">
+                        <h5 class="text-muted text-uppercase small fw-bold mb-3">Bütçe Durumu</h5>
+                        
+                        @{
+                            var usagePercent = (Model.TotalMonthlyCost / Model.TotalBudget) * 100;
+                            var progressColor = usagePercent > 90 ? "bg-danger" : usagePercent > 75 ? "bg-warning" : "bg-success";
+                        }
+                        
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-white fw-bold">₺@Model.TotalMonthlyCost</span>
+                            <span class="text-muted">Hedef: ₺@Model.TotalBudget</span>
+                        </div>
+                        <div class="progress mb-4" style="height: 10px; background: rgba(255,255,255,0.1);">
+                            <div class="progress-bar @progressColor rounded-pill" role="progressbar" style="width: @usagePercent%"></div>
+                        </div>
+
+                        <div class="mt-4">
+                            @foreach (var cat in Model.CategorySpending.OrderByDescending(x => x.Value).Take(3))
+                            {
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="dot me-2" style="background-color: var(--primary);"></span>
+                                        <span class="text-white">@cat.Key</span>
+                                    </div>
+                                    <span class="text-muted">@cat.Value.ToString("C0")</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Table -->
+        <div class="card border-0 shadow-lg glass-card">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                <h4 class="fw-bold text-white mb-0">Son Eklenenler</h4>
+                <a asp-controller="Subscription" asp-action="Index" class="btn btn-sm btn-outline-light rounded-pill px-3">Tümünü Gör</a>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-borderless text-white mb-0">
+                        <thead>
+                            <tr class="text-muted small text-uppercase">
+                                <th>Platform</th>
+                                <th>Kategori</th>
+                                <th>Döngü</th>
+                                <th class="text-end">Tutar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sub in Model.RecentSubscriptions)
+                            {
+                                <tr class="align-middle border-bottom border-dark">
+                                    <td class="py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle bg-soft-primary p-2 me-3 text-primary d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                                                <span class="fw-bold">@sub.Name.Substring(0,1)</span>
+                                            </div>
+                                            <span class="fw-bold">@sub.Name</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted">@sub.Category</td>
+                                    <td><span class="badge bg-soft-info text-info rounded-pill">@sub.BillingCycle</span></td>
+                                    <td class="text-end fw-bold">@sub.Price.ToString("C2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Upcoming & Alerts -->
+    <div class="col-lg-4">
+        <!-- Upcoming Renewal (Sticky) -->
+        <div class="card border-0 shadow-lg glass-card mb-5">
+            <div class="card-body p-4 text-center">
+                <h5 class="text-muted text-uppercase small fw-bold mb-4">Yaklaşan Ödeme</h5>
+                
+                @if (Model.UpcomingRenewal != null)
+                {
+                    <div class="position-relative d-inline-block mb-3">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8" />
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#a855f7" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="100" stroke-linecap="round" transform="rotate(-90 60 60)" />
+                        </svg>
+                        <div class="position-absolute top-50 start-50 translate-middle text-center">
+                            <h2 class="display-6 fw-bold text-white mb-0">@((Model.UpcomingRenewal.RenewalDate - DateTime.Today).Days)</h2>
+                            <small class="text-muted">Gün</small>
+                        </div>
+                    </div>
+
+                    <h3 class="fw-bold text-white mb-1">@Model.UpcomingRenewal.Name</h3>
+                    <p class="text-primary fs-5 mb-3">@Model.UpcomingRenewal.Price.ToString("C2")</p>
+                    <a asp-controller="Subscription" asp-action="Details" asp-route-id="@Model.UpcomingRenewal.Id" class="btn btn-outline-light btn-sm rounded-pill w-100">Detayları Gör</a>
+                }
+                else
+                {
+                    <p class="text-muted">Yaklaşan ödeme yok.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Notifications / Tips -->
+        <h5 class="text-muted text-uppercase small fw-bold mb-3">Bildirimler</h5>
+        <div class="d-flex flex-column gap-3">
+            @foreach (var alert in Model.Alerts)
+            {
+                <div class="alert-glass p-3 rounded-3 d-flex align-items-start gap-3">
+                    <div class="text-warning fs-4"><i class="bi bi-bell"></i></div>
+                    <div>
+                        <p class="text-white small mb-0">@alert</p>
+                        <small class="text-muted" style="font-size: 0.75rem;">Şimdi</small>
+                    </div>
+                </div>
+            }
+            <div class="alert-glass p-3 rounded-3 d-flex align-items-start gap-3">
+                <div class="text-success fs-4"><i class="bi bi-lightbulb"></i></div>
+                <div>
+                    <p class="text-white small mb-0">İpucu: Gereksiz abonelikleri iptal ederek ayda ₺150 tasarruf edebilirsiniz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .alert-glass {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background 0.2s;
+    }
+    .alert-glass:hover {
+        background: rgba(255, 255, 255, 0.07);
+    }
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .bg-soft-primary { background: rgba(99, 102, 241, 0.2); }
+    .bg-soft-info { background: rgba(56, 189, 248, 0.2); }
+    .bg-soft-success { background: rgba(34, 197, 94, 0.2); }
+    .bg-soft-warning { background: rgba(234, 179, 8, 0.2); }
+    
+    .letter-spacing-2 { letter-spacing: 2px; }
+    
+    .hover-scale { transition: transform 0.2s; }
+    .hover-scale:hover { transform: scale(1.05); }
+</style>
+
+<!-- Add Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        
+        // Data from Model (Serialized)
+        const labels = @Html.Raw(Json.Serialize(Model.CategorySpending.Keys));
+        const data = @Html.Raw(Json.Serialize(Model.CategorySpending.Values));
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#6366f1', // Primary
+                        '#a855f7', // Secondary
+                        '#3b82f6', // Blue
+                        '#ec4899', // Pink
+                        '#f59e0b'  // Orange
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false // We use custom custom legend in HTML
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': ' + context.raw + ' TL';
+                            }
+                        }
+                    }
+                },
+                cutout: '75%'
+            }
+        });
+    });
+</script>
+
+<!-- Add Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

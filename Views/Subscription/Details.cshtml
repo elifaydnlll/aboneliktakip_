@@ -1,0 +1,65 @@
+@model webproje.Models.Subscription
+
+@{
+    ViewData["Title"] = "Abonelik Detayları";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-lg glass-card mt-5">
+            <div class="card-body p-5">
+                <div class="text-center mb-5">
+                    <div class="rounded-circle bg-soft-primary p-4 d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <span class="display-4 fw-bold text-primary">@Model.Name.Substring(0, 1)</span>
+                    </div>
+                    <h2 class="fw-bold text-white">@Model.Name</h2>
+                    <span class="badge bg-soft-info text-info rounded-pill px-3 py-2">@Model.Category</span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-muted text-uppercase small fw-bold mb-1">Aylık Tutar</label>
+                    <h3 class="text-white fw-bold display-6">@Model.Price.ToString("C2")</h3>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-6">
+                        <label class="text-muted text-uppercase small fw-bold mb-1">Yenilenme Tarihi</label>
+                        <p class="text-white fs-5 mb-0">@Model.RenewalDate.ToString("dd MMMM yyyy")</p>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-muted text-uppercase small fw-bold mb-1">Döngü</label>
+                        <p class="text-white fs-5 mb-0">Aylık</p>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="text-muted text-uppercase small fw-bold mb-1">Açıklama</label>
+                    <p class="text-white-50">@(string.IsNullOrEmpty(Model.Description) ? "Açıklama bulunmuyor." : Model.Description)</p>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning py-3 rounded-pill fw-bold">
+                        <i class="bi bi-pencil me-2"></i> Düzenle
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-light py-3 rounded-pill">
+                        <i class="bi bi-arrow-left me-2"></i> Listeye Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .bg-soft-primary { background: rgba(99, 102, 241, 0.2); }
+    .bg-soft-info { background: rgba(56, 189, 248, 0.2); }
+    
+    .text-primary { color: #818cf8 !important; }
+    .text-info { color: #38bdf8 !important; }
+</style>

@@ -1,0 +1,60 @@
+@model webproje.Models.Bill
+
+@{
+    ViewData["Title"] = "Faturayı Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-lg" style="background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px);">
+            <div class="card-body p-5">
+                <h2 class="text-center text-gradient fw-bold mb-4">Faturayı Düzenle</h2>
+                
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label text-muted">Fatura Türü</label>
+                        <input asp-for="Name" class="form-control bg-dark text-white border-secondary" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Amount" class="form-label text-muted">Tutar</label>
+                        <input asp-for="Amount" class="form-control bg-dark text-white border-secondary" />
+                        <span asp-validation-for="Amount" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DueDate" class="form-label text-muted">Son Ödeme Tarihi</label>
+                        <input asp-for="DueDate" class="form-control bg-dark text-white border-secondary" type="date" />
+                        <span asp-validation-for="DueDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SubscriberNumber" class="form-label text-muted">Abone No (Opsiyonel)</label>
+                        <input asp-for="SubscriberNumber" class="form-control bg-dark text-white border-secondary" />
+                        <span asp-validation-for="SubscriberNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" asp-for="IsPaid" />
+                        <label class="form-check-label text-muted" asp-for="IsPaid">
+                            Ödendi (İşaretlenirse borç kalkar)
+                        </label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold">Güncelle</button>
+                        <a asp-action="Index" class="btn btn-link text-muted text-decoration-none">Vazgeç</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

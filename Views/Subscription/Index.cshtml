@@ -1,0 +1,96 @@
+@model IEnumerable<webproje.Models.Subscription>
+
+@{
+    ViewData["Title"] = "Aboneliklerim";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+        <h1 class="display-4 text-gradient fw-bold">Aboneliklerim</h1>
+        <p class="text-muted">Tüm dijital servislerin tek bir yerde.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-lg">
+        <i class="bi bi-plus-lg"></i> Yeni Ekle
+    </a>
+</div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-12">
+        <form asp-action="Index" method="get" class="d-flex gap-3 bg-dark p-3 rounded-4 bg-opacity-50 border border-secondary" style="backdrop-filter: blur(5px);">
+            <div class="flex-grow-1 position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                <input type="text" name="searchString" value="@ViewBag.CurrentFilter" class="form-control form-control-lg bg-transparent text-white border-0 ps-5" placeholder="Abonelik Ara..." style="box-shadow: none;">
+            </div>
+            <div class="vr bg-secondary"></div>
+            <div class="w-25">
+                <select name="category" class="form-select form-select-lg bg-transparent text-white border-0" onchange="this.form.submit()" style="box-shadow: none;">
+                    <option class="bg-dark" value="">Tüm Kategoriler</option>
+                    @if (ViewBag.Categories != null)
+                    {
+                        foreach (var cat in ViewBag.Categories as List<string>)
+                        {
+                            if (ViewBag.CurrentCategory as string == cat)
+                            {
+                                <option class="bg-dark" value="@cat" selected>@cat</option>
+                            }
+                            else
+                            {
+                                <option class="bg-dark" value="@cat">@cat</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Ara</button>
+            @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter as string) || !string.IsNullOrEmpty(ViewBag.CurrentCategory as string))
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Temizle</a>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="icon-shape bg-soft-primary text-primary rounded-circle p-3">
+                            <!-- Placeholder Icon -->
+                            <span class="fw-bold h4 mb-0">@item.Name.Substring(0,1)</span>
+                        </div>
+                        <span class="badge bg-light text-dark rounded-pill">@item.Category</span>
+                    </div>
+                    <h3 class="card-title fw-bold text-white mb-1">@item.Name</h3>
+                    <h4 class="text-primary mb-3">@item.Price.ToString("C2") <span class="fs-6 text-muted">/ ay</span></h4>
+                    
+                    <p class="text-muted small mb-4">
+                        @(item.Description ?? "Açıklama yok")
+                    </p>
+
+                    <div class="d-flex justify-content-between text-muted small border-top pt-3 border-secondary">
+                        <span>Yenilenme</span>
+                        <span class="text-white">@item.RenewalDate.ToShortDateString()</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                    <div class="d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-light btn-sm flex-fill rounded-pill">Düzenle</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm flex-fill rounded-pill">Sil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <h3 class="text-muted">Henüz hiç abonelik eklemediniz.</h3>
+        <p class="text-muted">Hemen bir tane ekleyerek başlayın!</p>
+    </div>
+}

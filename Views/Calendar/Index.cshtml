@@ -1,0 +1,91 @@
+@{
+    ViewData["Title"] = "Takvim";
+}
+
+<div class="row mb-4 align-items-end">
+    <div class="col-lg-8">
+        <h6 class="text-uppercase text-muted letter-spacing-2 mb-2">Planlama</h6>
+        <h1 class="display-4 fw-bold text-white mb-0">Ödeme Takvimi</h1>
+    </div>
+</div>
+
+<div class="card border-0 shadow-lg glass-card">
+    <div class="card-body p-4">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Calendar Customization */
+    .fc {
+        color: #fff;
+    }
+    .fc-theme-standard td, .fc-theme-standard th {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    .fc-col-header-cell-cushion, .fc-daygrid-day-number {
+        color: #fff;
+        text-decoration: none;
+    }
+    .fc-daygrid-day-number:hover {
+        color: var(--primary);
+    }
+    .fc-button-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+    .fc-button-primary:hover {
+        background-color: var(--bs-indigo);
+        border-color: var(--bs-indigo);
+    }
+    .fc-day-today {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+    .fc-event {
+        cursor: pointer;
+        border: none;
+        padding: 2px 4px;
+        font-size: 0.85em;
+        transition: transform 0.2s;
+    }
+    .fc-event:hover {
+        transform: scale(1.02);
+    }
+</style>
+
+@section Scripts {
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'tr',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,listMonth'
+                },
+                buttonText: {
+                    today: 'Bugün',
+                    month: 'Ay',
+                    list: 'Liste'
+                },
+                events: '/Calendar/GetEvents',
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        window.location.href = info.event.url;
+                        info.jsEvent.preventDefault();
+                    }
+                }
+            });
+            calendar.render();
+        });
+    </script>
+}

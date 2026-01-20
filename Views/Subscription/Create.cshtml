@@ -1,0 +1,65 @@
+@model webproje.Models.Subscription
+
+@{
+    ViewData["Title"] = "Yeni Abonelik";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-lg" style="background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px);">
+            <div class="card-body p-5">
+                <h2 class="text-center text-gradient fw-bold mb-4">Yeni Abonelik</h2>
+                
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label text-muted">Platform Adı</label>
+                        <input asp-for="Name" class="form-control bg-dark text-white border-secondary" placeholder="Örn: Netflix" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Price" class="form-label text-muted">Fiyat</label>
+                            <input asp-for="Price" class="form-control bg-dark text-white border-secondary" placeholder="0.00" />
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Category" class="form-label text-muted">Kategori</label>
+                            <input asp-for="Category" class="form-control bg-dark text-white border-secondary" list="categoryOptions" placeholder="Kategori seçin veya yazın..." />
+                            <datalist id="categoryOptions">
+                                @foreach (var cat in webproje.Services.CategoryRepository.Categories)
+                                {
+                                    <option value="@cat"></option>
+                                }
+                            </datalist>
+                            <span asp-validation-for="Category" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RenewalDate" class="form-label text-muted">Yenilenme Tarihi</label>
+                        <input asp-for="RenewalDate" class="form-control bg-dark text-white border-secondary" type="date" />
+                        <span asp-validation-for="RenewalDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label text-muted">Açıklama (Opsiyonel)</label>
+                        <textarea asp-for="Description" class="form-control bg-dark text-white border-secondary" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold">Kaydet</button>
+                        <a asp-action="Index" class="btn btn-link text-muted text-decoration-none">Vazgeç</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

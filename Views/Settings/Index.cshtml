@@ -1,0 +1,75 @@
+@model webproje.Models.SettingsViewModel
+
+@{
+    ViewData["Title"] = "Ayarlar";
+}
+
+<div class="row mb-5 align-items-end">
+    <div class="col-lg-8">
+        <h6 class="text-muted letter-spacing-2 mb-2">Tercihler</h6>
+        <h1 class="display-4 fw-bold mb-0" style="color: var(--text-light);">Ayarlar</h1>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-lg glass-card">
+            <div class="card-body p-5">
+                <form asp-action="Update" method="post">
+                    <h5 class="fw-bold mb-4" style="color: var(--text-light);">Profil Bilgileri</h5>
+                    
+                    <div class="mb-4">
+                        <label asp-for="UserName" class="form-label small fw-bold" style="color: var(--text-muted);">Görünen İsim</label>
+                        <input asp-for="UserName" class="form-control form-control-lg border-secondary" style="background-color: var(--dark-bg); color: var(--text-light);" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                             <label asp-for="MonthlyBudget" class="form-label small fw-bold" style="color: var(--text-muted);">Aylık Bütçe Hedefi</label>
+                             <div class="input-group">
+                                 <span class="input-group-text border-secondary text-secondary" style="background-color: var(--dark-bg);">@Model.Currency</span>
+                                 <input asp-for="MonthlyBudget" type="number" class="form-control form-control-lg border-secondary" style="background-color: var(--dark-bg); color: var(--text-light);" required>
+                             </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                             <label asp-for="Currency" class="form-label small fw-bold" style="color: var(--text-muted);">Para Birimi Sembolü</label>
+                             <select asp-for="Currency" class="form-select form-select-lg border-secondary" style="background-color: var(--dark-bg); color: var(--text-light);">
+                                 <option style="background-color: var(--dark-bg);" value="₺">₺ (Türk Lirası)</option>
+                                 <option style="background-color: var(--dark-bg);" value="$">$ (USD)</option>
+                                 <option style="background-color: var(--dark-bg);" value="€">€ (Euro)</option>
+                                 <option style="background-color: var(--dark-bg);" value="£">£ (Sterlin)</option>
+                             </select>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary my-5">
+
+                    <h5 class="fw-bold mb-4" style="color: var(--text-light);">Uygulama Tercihleri</h5>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="DarkMode" onchange="this.form.submit()">
+                        <label class="form-check-label" style="color: var(--text-light);" asp-for="DarkMode">Karanlık Mod</label>
+                    </div>
+
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">Kaydet ve Uygula</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .form-control:focus, .form-select:focus {
+        background-color: rgba(30, 41, 59, 0.8);
+        border-color: var(--primary);
+        color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+    }
+</style>
